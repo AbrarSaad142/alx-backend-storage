@@ -7,7 +7,6 @@ SELECT
     ) AS lifespan
 FROM 
     metal_bands
-WHERE 
-    genre = 'Glam rock'
+WHERE style LIKE '%Glam rock%'
 ORDER BY 
-    lifespan DESC, band_name ASC;
+    lifespan DESC;
