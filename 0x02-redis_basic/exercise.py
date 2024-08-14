@@ -1,16 +1,6 @@
-#!/usr/bin/env python3
-"""
-Create a Cache class. In the __init__ method, 
-store an instance of the Redis client as a private variable named _redis
- (using redis.Redis()) and flush the instance using flushdb.
-"""
-
-
-from typing import Union
-import uuid
-
 import redis
-
+import uuid
+from typing import Union, Callable, Optional
 
 class Cache:
     def __init__(self):
@@ -38,3 +28,49 @@ class Cache:
 
         # Return the key
         return random_key
+
+    def get(self, key: str, fn: Optional[Callable] = None) -> Union[str, bytes, int, None]:
+        """
+        Retrieve data from Redis and optionally apply a conversion function.
+
+        Args:
+            key (str): The key to retrieve the data.
+            fn (Optional[Callable]): A callable used to convert the data back to the desired format.
+
+        Returns:
+            Union[str, bytes, int, None]: The retrieved data, optionally converted using the provided callable.
+        """
+        # Retrieve the data from Redis
+        data = self._redis.get(key)
+        
+        if data is None:
+            return None  # Return None if the key does not exist
+        
+        if fn:
+            return fn(data)  # Apply the conversion function if provided
+        
+        return data  # Return the data as-is if no function is provided
+
+    def get_str(self, key: str) -> Optional[str]:
+        """
+        Retrieve data from Redis and convert it to a string using UTF-8 decoding.
+
+        Args:
+            key (str): The key to retrieve the data.
+
+        Returns:
+            Optional[str]: The data as a UTF-8 decoded string, or None if the key does not exist.
+        """
+        return self.get(key, lambda d: d.decode("utf-8"))
+
+    def get_int(self, key: str) -> Optional[int]:
+        """
+        Retrieve data from Redis and convert it to an integer.
+
+        Args:
+            key (str): The key to retrieve the data.
+
+        Returns:
+            Optional[int]: The data converted to an integer, or None if the key does not exist.
+        """
+        return self.get(key, int)
