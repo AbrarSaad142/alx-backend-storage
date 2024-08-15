@@ -62,8 +62,8 @@ class Cache:
         self._redis.set(random_key, data)
         return random_key
 
-    def get(self, key: str, fn: Optional[Callable] = None) ->
-    Union[str, bytes, int, None]:
+    def get(self, key: str, fn:
+            Optional[Callable] = None) -> Union[str, bytes, int, None]:
         data = self._redis.get(key)
         if data is None:
             return None
